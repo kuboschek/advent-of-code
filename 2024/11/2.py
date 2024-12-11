@@ -1,4 +1,5 @@
 from functools import reduce
+from collections import Counter
 
 def load_from_string(s: str) -> list[list[str]]:
     return [list(line) for line in s.strip().split('\n')]
@@ -12,27 +13,36 @@ def check(input_file, func):
         input_str = f.read()
     return func(input_str)
 
-def iterate(stones):
-    def reducer(new_stones, stone):
-        if stone == 0:
-            new_stones.append(1)
-        elif len(str(stone)) % 2 == 0:
-            left, right = int(str(stone)[:len(str(stone))//2]), int(str(stone)[len(str(stone))//2:])
-            new_stones.extend([left, right])
-        else:
-            new_stones.append(stone * 2024)
-        return new_stones
+def iterate(stones_counter):
+    new_stones_counter = Counter()
 
-    return reduce(reducer, stones, [])
+    for stone, count in stones_counter.items():
+
+        if stone == 0:
+            new_stones_counter[1] += count
+
+        elif len(str(stone)) % 2 == 0:
+            stone_str = str(stone)
+            middle = len(stone_str) // 2
+
+            left = int(stone_str[:middle])
+            right = int(stone_str[middle:])
+
+            new_stones_counter[left] += count
+            new_stones_counter[right] += count
+        else:
+            new_stones_counter[stone * 2024] += count
+
+    return new_stones_counter
 
 def solve(input_str: str):
-    stones = list(map(int, input_str.split(' ')))
+    stones = Counter(map(int, input_str.split(' ')))
 
     for i in range(75):
         print(i)
         stones = iterate(stones)
 
-    return len(stones)
+    return sum(stones.values())
 
 
 if __name__ == '__main__':
