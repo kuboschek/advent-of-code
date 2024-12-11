@@ -28,7 +28,7 @@ def iterate(stones):
 def solve(input_str: str):
     stones = list(map(int, input_str.split(' ')))
 
-    for i in range(75):
+    for i in range(25):
         print(i)
         stones = iterate(stones)
 
